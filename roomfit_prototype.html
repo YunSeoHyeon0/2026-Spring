@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoomFit | 원룸 수납 가구 추천</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: #f6f3ee;
+      color: #2f2a26;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #f7efe4, #fffaf5);
+      border: 1px solid #eadfce;
+      border-radius: 24px;
+      padding: 36px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(76, 61, 46, 0.06);
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2.3rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #6a5f56;
+      line-height: 1.7;
+      font-size: 1rem;
+      max-width: 700px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: #fffaf6;
+      border: 1px solid #eadfce;
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(76, 61, 46, 0.05);
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 1.2rem;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d8cbbb;
+      border-radius: 14px;
+      background: #fff;
+      font-size: 0.95rem;
+      color: #2f2a26;
+    }
+
+    .field small {
+      display: block;
+      margin-top: 6px;
+      color: #7e736a;
+      line-height: 1.5;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-size: 0.96rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .primary-btn {
+      background: #7a5c42;
+      color: #fff;
+      flex: 1;
+    }
+
+    .secondary-btn {
+      background: #ece3d8;
+      color: #5f4f43;
+      width: 90px;
+    }
+
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: #efe3d4;
+      color: #6a523d;
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 8px 11px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .summary-box {
+      background: #fcf5ee;
+      border: 1px solid #eadfce;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .summary-box h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.05rem;
+    }
+
+    .summary-box p {
+      margin: 0;
+      color: #645a52;
+      line-height: 1.7;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #eadfce;
+      border-radius: 20px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(76, 61, 46, 0.04);
+    }
+
+    .card .rank {
+      width: fit-content;
+      background: #f1e6da;
+      color: #6d533d;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: #5e534a;
+    }
+
+    .meta div {
+      background: #faf5ef;
+      border-radius: 12px;
+      padding: 9px 10px;
+    }
+
+    .reason {
+      color: #645a52;
+      line-height: 1.65;
+      font-size: 0.94rem;
+      min-height: 78px;
+    }
+
+    .score {
+      margin-top: auto;
+      font-weight: 700;
+      color: #7a5c42;
+    }
+
+    .empty-state {
+      border: 1px dashed #ccbba7;
+      background: #fffdf9;
+      border-radius: 20px;
+      padding: 32px 20px;
+      text-align: center;
+      color: #6f645b;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 920px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>RoomFit</h1>
+      <p>
+        RoomFit은 원룸 1인 가구의 수납 문제를 해결하기 위해, 사용자의 공간 조건과 정리하고 싶은 물건 종류를 바탕으로
+        가장 적합한 수납 가구를 추천하는 웹사이트입니다.
+      </p>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <h2>내 방 정보 입력</h2>
+
+        <div class="field">
+          <label for="roomSize">방 크기</label>
+          <select id="roomSize">
+            <option value="small">좁은 원룸</option>
+            <option value="medium">보통 크기</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="roomStyle">방 스타일</label>
+          <select id="roomStyle">
+            <option value="minimal">미니멀</option>
+            <option value="cozy">아기자기 / 포근한 느낌</option>
+            <option value="modern">모던</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="itemType">정리하고 싶은 물건</label>
+          <select id="itemType">
+            <option value="clothes">옷</option>
+            <option value="books">책</option>
+            <option value="cosmetics">화장품</option>
+            <option value="misc">잡동사니</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="itemAmount">물건 양</label>
+          <select id="itemAmount">
+            <option value="low">적음</option>
+            <option value="medium">보통</option>
+            <option value="high">많음</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="budget">예산</label>
+          <select id="budget">
+            <option value="low">5만원 이하</option>
+            <option value="mid">5만원 ~ 10만원</option>
+            <option value="high">10만원 이상</option>
+          </select>
+          <small>중간고사 프로토타입은 샘플 데이터 기반으로 작동합니다.</small>
+        </div>
+
+        <div class="button-row">
+          <button class="primary-btn" id="recommendBtn">추천 받기</button>
+          <button class="secondary-btn" id="resetBtn">초기화</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="result-top">
+          <div>
+            <h2 style="margin-bottom: 6px;">추천 결과</h2>
+            <span class="badge">원룸 수납 문제 해결형 추천</span>
+          </div>
+        </div>
+
+        <div class="summary-box" id="summaryBox">
+          <h3>RoomFit 요약</h3>
+          <p>왼쪽에서 내 방 정보를 입력하고 추천 버튼을 누르면, 조건에 맞는 수납 가구와 추천 이유가 나타납니다.</p>
+        </div>
+
+        <div id="resultArea" class="empty-state">
+          아직 추천 결과가 없습니다.<br />
+          방 정보와 정리할 물건을 선택한 뒤 <strong>추천 받기</strong>를 눌러보세요.
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const furnitureData = [
+      {
+        name: "세로형 4단 서랍장",
+        type: "drawer",
+        suitedItems: ["clothes", "cosmetics"],
+        suitedRoom: ["small", "medium"],
+        styles: ["minimal", "modern"],
+        price: 59000,
+        priceLevel: "mid",
+        reason: "세로형 구조라 좁은 원룸에서도 바닥 면적을 덜 차지하고, 옷이나 생활용품을 깔끔하게 분류할 수 있습니다."
+      },
+      {
+        name: "오픈형 철제 선반",
+        type: "shelf",
+        suitedItems: ["books", "misc"],
+        suitedRoom: ["small", "medium"],
+        styles: ["modern", "minimal"],
+        price: 47000,
+        priceLevel: "low",
+        reason: "책이나 자주 사용하는 물건을 빠르게 꺼내기 좋고, 시야가 트여 보여 좁은 공간에서도 답답함이 덜합니다."
+      },
+      {
+        name: "뚜껑형 패브릭 수납 박스 세트",
+        type: "box",
+        suitedItems: ["misc", "clothes", "cosmetics"],
+        suitedRoom: ["small", "medium"],
+        styles: ["cozy", "minimal"],
+        price: 26000,
+        priceLevel: "low",
+        reason: "잡동사니를 빠르게 정리하기 좋고 이동이 쉬워, 원룸에서 유동적으로 배치하기 좋은 수납 방식입니다."
+      },
+      {
+        name: "슬림형 이동식 트롤리",
+        type: "trolley",
+        suitedItems: ["cosmetics", "misc", "books"],
+        suitedRoom: ["small", "medium"],
+        styles: ["cozy", "modern"],
+        price: 39000,
+        priceLevel: "low",
+        reason: "폭이 좁아 남는 공간에 배치하기 좋고, 자주 쓰는 물건을 한곳에 정리하면서도 이동이 편리합니다."
+      },
+      {
+        name: "도어형 수납장",
+        type: "cabinet",
+        suitedItems: ["clothes", "misc"],
+        suitedRoom: ["medium"],
+        styles: ["modern", "minimal"],
+        price: 99000,
+        priceLevel: "mid",
+        reason: "물건을 시야에서 가려 깔끔한 인상을 유지할 수 있고, 양이 많은 생활용품이나 의류를 정리하기 좋습니다."
+      },
+      {
+        name: "원목 미니 화장품 정리대",
+        type: "organizer",
+        suitedItems: ["cosmetics"],
+        suitedRoom: ["small", "medium"],
+        styles: ["cozy", "minimal"],
+        price: 18000,
+        priceLevel: "low",
+        reason: "화장품처럼 작은 물건을 세분화해 정리하기 좋고, 감성적인 방 스타일에도 자연스럽게 어울립니다."
+      }
+    ];
+
+    const roomSizeEl = document.getElementById("roomSize");
+    const roomStyleEl = document.getElementById("roomStyle");
+    const itemTypeEl = document.getElementById("itemType");
+    const itemAmountEl = document.getElementById("itemAmount");
+    const budgetEl = document.getElementById("budget");
+    const recommendBtn = document.getElementById("recommendBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const resultArea = document.getElementById("resultArea");
+    const summaryBox = document.getElementById("summaryBox");
+
+    function formatPrice(value) {
+      return value.toLocaleString("ko-KR") + "원";
+    }
+
+    function getBudgetLimit(level) {
+      if (level === "low") return 50000;
+      if (level === "mid") return 100000;
+      return 99999999;
+    }
+
+    function calculateScore(item, user) {
+      let score = 0;
+
+      if (item.suitedItems.includes(user.itemType)) score += 45;
+      if (item.suitedRoom.includes(user.roomSize)) score += 20;
+      if (item.styles.includes(user.roomStyle)) score += 15;
+      if (item.price <= getBudgetLimit(user.budget)) score += 15;
+
+      if (user.itemAmount === "high") {
+        if (["drawer", "cabinet", "shelf"].includes(item.type)) score += 10;
+      }
+
+      if (user.itemAmount === "low") {
+        if (["box", "organizer", "trolley"].includes(item.type)) score += 8;
+      }
+
+      if (user.roomSize === "small") {
+        if (["drawer", "trolley", "box", "organizer"].includes(item.type)) score += 8;
+        if (item.type === "cabinet") score -= 6;
+      }
+
+      return score;
+    }
+
+    function getItemLabel(value) {
+      const labels = {
+        clothes: "옷",
+        books: "책",
+        cosmetics: "화장품",
+        misc: "잡동사니"
+      };
+      return labels[value];
+    }
+
+    function getStyleLabel(value) {
+      const labels = {
+        minimal: "미니멀",
+        cozy: "아기자기 / 포근한 느낌",
+        modern: "모던"
+      };
+      return labels[value];
+    }
+
+    function getRoomLabel(value) {
+      return value === "small" ? "좁은 원룸" : "보통 크기";
+    }
+
+    function renderSummary(user, topPick) {
+      summaryBox.innerHTML = `
+        <h3>분석 요약</h3>
+        <p>
+          현재 방은 <strong>${getRoomLabel(user.roomSize)}</strong>이며, 스타일은 <strong>${getStyleLabel(user.roomStyle)}</strong>입니다.
+          정리하고 싶은 물건은 <strong>${getItemLabel(user.itemType)}</strong>이고 양은 <strong>${user.itemAmount === "low" ? "적음" : user.itemAmount === "medium" ? "보통" : "많음"}</strong>으로 입력되었습니다.<br /><br />
+          RoomFit은 이를 바탕으로 <strong>${topPick.name}</strong>을(를) 가장 적합한 수납 가구로 판단했습니다.
+        </p>
+      `;
+    }
+
+    function renderResults(recommendations) {
+      if (recommendations.length === 0) {
+        resultArea.className = "empty-state";
+        resultArea.innerHTML = "조건에 맞는 추천 결과가 없습니다. 예산이나 스타일 조건을 조금 완화해보세요.";
+        return;
+      }
+
+      resultArea.className = "cards";
+      resultArea.innerHTML = recommendations.map((item, index) => `
+        <article class="card">
+          <div class="rank">추천 ${index + 1}순위</div>
+          <h3>${item.name}</h3>
+          <div class="meta">
+            <div>가격<br /><strong>${formatPrice(item.price)}</strong></div>
+            <div>유형<br /><strong>${item.type}</strong></div>
+          </div>
+          <div class="reason">${item.reason}</div>
+          <div class="score">적합도 점수: ${item.score}점</div>
+        </article>
+      `).join("");
+    }
+
+    recommendBtn.addEventListener("click", () => {
+      const user = {
+        roomSize: roomSizeEl.value,
+        roomStyle: roomStyleEl.value,
+        itemType: itemTypeEl.value,
+        itemAmount: itemAmountEl.value,
+        budget: budgetEl.value
+      };
+
+      const recommendations = furnitureData
+        .map(item => ({ ...item, score: calculateScore(item, user) }))
+        .filter(item => item.price <= getBudgetLimit(user.budget))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+      renderResults(recommendations);
+
+      if (recommendations.length > 0) {
+        renderSummary(user, recommendations[0]);
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      roomSizeEl.value = "small";
+      roomStyleEl.value = "minimal";
+      itemTypeEl.value = "clothes";
+      itemAmountEl.value = "low";
+      budgetEl.value = "low";
+
+      summaryBox.innerHTML = `
+        <h3>RoomFit 요약</h3>
+        <p>왼쪽에서 내 방 정보를 입력하고 추천 버튼을 누르면, 조건에 맞는 수납 가구와 추천 이유가 나타납니다.</p>
+      `;
+      resultArea.className = "empty-state";
+      resultArea.innerHTML = `
+        아직 추천 결과가 없습니다.<br />
+        방 정보와 정리할 물건을 선택한 뒤 <strong>추천 받기</strong>를 눌러보세요.
+      `;
+    });
+  </script>
+</body>
+</html>
