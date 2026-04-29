@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomFit - 원룸 수납 가구 추천</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .form-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .options.three-col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .option-btn {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .price-range {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .recommendation-card {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .recommendation-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .recommendation-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .reason {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 3px solid #764ba2;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        .cost-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .cost-summary h4 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .cost-summary .total {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #ddd;
+            color: #333;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #999;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .options.three-col {
+                grid-template-columns: 1fr;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏠 RoomFit</h1>
+            <p>당신의 원룸을 위한 맞춤형 수납 가구 추천 시스템</p>
+        </header>
+
+        <!-- 입력 폼 -->
+        <div class="form-section" id="formSection">
+            <h2>📋 당신의 상황을 알려주세요</h2>
+
+            <div class="form-group">
+                <label>📦 정리할 물건 종류는? (복수 선택)</label>
+                <div class="options">
+                    <button class="option-btn" onclick="toggleItem('clothes')">👕 옷</button>
+                    <button class="option-btn" onclick="toggleItem('books')">📚 책</button>
+                    <button class="option-btn" onclick="toggleItem('cosmetics')">💄 화장품</button>
+                    <button class="option-btn" onclick="toggleItem('misc')">🎁 잡동사니</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>📊 물건의 양은?</label>
+                <div class="options">
+                    <button class="option-btn" onclick="setAmount('low')">적음</button>
+                    <button class="option-btn" onclick="setAmount('medium')">보통</button>
+                    <button class="option-btn" onclick="setAmount('high')">많음</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>📐 공간 조건은?</label>
+                <div class="options">
+                    <button class="option-btn" onclick="setSpace('narrow')">좁음 (2~3m²)</button>
+                    <button class="option-btn" onclick="setSpace('normal')">보통 (3~5m²)</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>🎨 방의 스타일은?</label>
+                <div class="options three-col">
+                    <button class="option-btn" onclick="setStyle('minimal')">미니멀</button>
+                    <button class="option-btn" onclick="setStyle('modern')">모던</button>
+                    <button class="option-btn" onclick="setStyle('cozy')">아기자기</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>💳 배송 조건</label>
+                <div class="options">
+                    <button class="option-btn" onclick="setShipping('free')">무료배송 필수</button>
+                    <button class="option-btn" onclick="setShipping('any')">상관없음</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>💰 예산 범위 (원)</label>
+                <div class="price-range">
+                    <input type="number" id="minPrice" placeholder="최소 금액" value="50000">
+                    <input type="number" id="maxPrice" placeholder="최대 금액" value="500000">
+                </div>
+            </div>
+
+            <button class="submit-btn" onclick="analyzeAndRecommend()">🔍 분석 및 추천받기</button>
+        </div>
+
+        <!-- 결과 표시 -->
+        <div class="result-section" id="resultSection">
+            <h2>✨ 당신을 위한 맞춤형 추천</h2>
+            <div id="recommendationResult"></div>
+            <button class="back-btn" onclick="resetForm()">← 다시 시작</button>
+        </div>
+    </div>
+
+    <script>
+        // 선택된 항목들 저장
+        let selectedItems = [];
+        let selectedAmount = '';
+        let selectedSpace = '';
+        let selectedStyle = '';
+        let selectedShipping = '';
+
+        function toggleItem(item) {
+            const btn = event.target;
+            if (selectedItems.includes(item)) {
+                selectedItems = selectedItems.filter(i => i !== item);
+                btn.classList.remove('selected');
+            } else {
+                selectedItems.push(item);
+                btn.classList.add('selected');
+            }
+        }
+
+        function setAmount(amount) {
+            selectedAmount = amount;
+            updateSelection('amount', amount);
+        }
+
+        function setSpace(space) {
+            selectedSpace = space;
+            updateSelection('space', space);
+        }
+
+        function setStyle(style) {
+            selectedStyle = style;
+            updateSelection('style', style);
+        }
+
+        function setShipping(shipping) {
+            selectedShipping = shipping;
+            updateSelection('shipping', shipping);
+        }
+
+        function updateSelection(type, value) {
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.textContent.includes(getDisplayText(value))) {
+                    btn.classList.add('selected');
+                } else if (type !== 'item') {
+                    if (!btn.parentElement.previousElementSibling || 
+                        !btn.parentElement.previousElementSibling.textContent.includes(getTypeLabel(type))) {
+                        if (btn.classList.contains('selected') && 
+                            btn.parentElement.previousElementSibling?.textContent.includes(getTypeLabel(type))) {
+                            btn.classList.remove('selected');
+                        }
+                    }
+                }
+            });
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                amount: '물건의 양',
+                space: '공간 조건',
+                style: '방의 스타일',
+                shipping: '배송 조건'
+            };
+            return labels[type] || '';
+        }
+
+        function getDisplayText(value) {
+            const texts = {
+                low: '적음',
+                medium: '보통',
+                high: '많음',
+                narrow: '좁음',
+                normal: '보통',
+                minimal: '미니멀',
+                modern: '모던',
+                cozy: '아기자기',
+                free: '무료배송',
+                any: '상관없음'
+            };
+            return texts[value] || value;
+        }
+
+        function analyzeAndRecommend() {
+            // 입력값 검증
+            if (selectedItems.length === 0 || !selectedAmount || !selectedSpace || !selectedStyle || !selectedShipping) {
+                alert('모든 항목을 선택해주세요!');
+                return;
+            }
+
+            // 분석 및 추천 로직
+            const recommendation = generateRecommendation();
+            displayResult(recommendation);
+        }
+
+        function generateRecommendation() {
+            const itemNames = {
+                clothes: '옷',
+                books: '책',
+                cosmetics: '화장품',
+                misc: '잡동사니'
+            };
+
+            const itemLabel = selectedItems.map(i => itemNames[i]).join(', ');
+
+            // 기본 추천 로직
+            let furnitureType = '';
+            let reason = '';
+            let baseCost = 0;
+            let additionalItems = [];
+
+            // 공간과 물건 양에 따른 추천
+            if (selectedSpace === 'narrow' && selectedAmount === 'high') {
+                furnitureType = '세로형 3단 서랍장';
+                baseCost = 180000;
+                reason = `공간이 좁고 물건이 많기 때문에, 세로 방향으로 공간을 활용하는 3단 서랍장이 최적입니다. ${itemLabel} 수납에 효율적입니다.`;
+                additionalItems = [
+                    { name: '수납 박스 세트', cost: 35000 },
+                    { name: '책꽂이 스탠드', cost: 25000 }
+                ];
+            } else if (selectedSpace === 'narrow' && selectedAmount === 'medium') {
+                furnitureType = '2단 멀티 선반장';
+                baseCost = 120000;
+                reason = `제한된 공간에서 중간 정도의 물건을 효율적으로 정리할 수 있는 컴팩트한 선반장이 적합합니다.`;
+                additionalItems = [
+                    { name: '수납 정리함', cost: 20000 }
+                ];
+            } else if (selectedSpace === 'normal' && selectedAmount === 'high') {
+                furnitureType = '3단 와이드 드로어 수납장';
+                baseCost = 240000;
+                reason = `넉넉한 공간에 많은 물건을 보관할 수 있는 와이드형 수납장이 최적입니다. 모든 종류의 물건을 체계적으로 정리할 수 있습니다.`;
+                additionalItems = [
+                    { name: '수납 박스 세트', cost: 35000 },
+                    { name: '정리 바구니', cost: 25000 },
+                    { name: '책꽂이 스탠드', cost: 25000 }
+                ];
+            } else {
+                furnitureType = '2단 멀티 박스형 수납장';
+                baseCost = 150000;
+                reason = `균형잡힌 공간 활용으로 기본적인 수납 필요를 충족시킬 수 있는 실용적인 수납장입니다.`;
+                additionalItems = [
+                    { name: '수납 정리함', cost: 20000 }
+                ];
+            }
+
+            // 스타일에 따른 조정
+            let styleNote = '';
+            const styleNotes = {
+                minimal: '미니멀 스타일에 맞춰 흰색이나 베이지색 상품을 추천합니다.',
+                modern: '모던 스타일에 맞춰 검은색이나 그레이 톤 상품을 추천합니다.',
+                cozy: '아기자기한 스타일에 맞춰 밝은 파스텔톤 상품을 추천합니다.'
+            };
+            styleNote = styleNotes[selectedStyle];
+
+            // 배송 조건 확인
+            let shippingNote = '';
+            if (selectedShipping === 'free') {
+                shippingNote = '모든 추천 상품은 무료배송 조건을 만족합니다.';
+                baseCost = Math.round(baseCost);
+            } else {
+                shippingNote = '배송비는 상품별로 다를 수 있습니다.';
+            }
+
+            const minPrice = parseInt(document.getElementById('minPrice').value);
+            const maxPrice = parseInt(document.getElementById('maxPrice').value);
+
+            const totalCost = baseCost + additionalItems.reduce((sum, item) => sum + item.cost, 0);
+
+            return {
+                mainFurniture: furnitureType,
+                mainCost: baseCost,
+                additionalItems: additionalItems,
+                totalCost: totalCost,
+                reason: reason,
+                styleNote: styleNote,
+                shippingNote: shippingNote,
+                budgetOk: totalCost >= minPrice && totalCost <= maxPrice
+            };
+        }
+
+        function displayResult(recommendation) {
+            const resultHtml = `
+                <div class="recommendation-card">
+                    <h3>🎯 추천 메인 가구</h3>
+                    <p><strong>${recommendation.mainFurniture}</strong></p>
+                    <p style="color: #764ba2; font-size: 1.2em; margin-top: 10px;">₩${recommendation.mainCost.toLocaleString()}</p>
+                </div>
+
+                ${recommendation.additionalItems.length > 0 ? `
+                    <div class="recommendation-card">
+                        <h3>🛒 추천 추가 상품</h3>
+                        ${recommendation.additionalItems.map(item => 
+                            `<p>• ${item.name}: ₩${item.cost.toLocaleString()}</p>`
+                        ).join('')}
+                    </div>
+                ` : ''}
+
+                <div class="recommendation-card">
+                    <h3>💡 추천 이유</h3>
+                    <div class="reason">
+                        <p>${recommendation.reason}</p>
+                        <p style="margin-top: 10px;">📌 ${recommendation.styleNote}</p>
+                        <p style="margin-top: 10px;">📦 ${recommendation.shippingNote}</p>
+                    </div>
+                </div>
+
+                <div class="cost-summary">
+                    <h4>총 예상 비용 (배송비 포함)</h4>
+                    <div class="total">₩${recommendation.totalCost.toLocaleString()}</div>
+                    ${recommendation.budgetOk ? 
+                        `<p style="margin-top: 10px; font-size: 0.95em;">✅ 예산 범위 내입니다!</p>` :
+                        `<p style="margin-top: 10px; font-size: 0.95em;">⚠️ 예산을 초과합니다. 추가 상품을 조정해주세요.</p>`
+                    }
+                </div>
+            `;
+
+            document.getElementById('recommendationResult').innerHTML = resultHtml;
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('resultSection').classList.add('show');
+        }
+
+        function resetForm() {
+            selectedItems = [];
+            selectedAmount = '';
+            selectedSpace = '';
+            selectedStyle = '';
+            selectedShipping = '';
+
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            document.getElementById('minPrice').value = '50000';
+            document.getElementById('maxPrice').value = '500000';
+
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('recommendationResult').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
