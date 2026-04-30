@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomFit - 원룸 수납 가구 추천</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { text-align: center; color: white; margin-bottom: 40px; padding: 30px 20px; }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        header p { font-size: 1.1em; opacity: 0.95; }
+        .form-section { background: white; border-radius: 15px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .form-section h2 { color: #667eea; margin-bottom: 20px; font-size: 1.4em; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 12px; font-weight: 600; color: #333; font-size: 0.95em; }
+        .options { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+        .options.two-col { grid-template-columns: 1fr 1fr; }
+        .option-btn { padding: 12px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer; transition: all 0.3s; font-size: 0.9em; font-weight: 500; text-align: center; }
+        .option-btn:hover { border-color: #667eea; background: #f0f4ff; }
+        .option-btn.selected { background: #667eea; color: white; border-color: #667eea; }
+        .submit-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; border: none; border-radius: 8px; font-size: 1.1em; font-weight: 600; cursor: pointer; width: 100%; transition: transform 0.2s, box-shadow 0.2s; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4); }
+        .result-section { display: none; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .result-section.show { display: block; animation: slideUp 0.5s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .result-section h2 { color: #667eea; margin-bottom: 20px; font-size: 1.4em; }
+        .recommendation-card { background: #f9f9f9; border-left: 4px solid #667eea; padding: 20px; margin-bottom: 15px; border-radius: 8px; }
+        .recommendation-card h3 { color: #333; margin-bottom: 15px; font-size: 1.1em; }
+        .product-item { background: white; padding: 15px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; }
+        .product-name { font-weight: 600; color: #333; margin-bottom: 5px; font-size: 1em; }
+        .product-link { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; font-size: 0.9em; font-weight: 600; transition: all 0.3s; }
+        .product-link:hover { background: #764ba2; text-decoration: none; transform: translateY(-2px); }
+        .info-text { background: #f0f4ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; color: #555; font-size: 0.95em; line-height: 1.6; }
+        .back-btn { background: #ddd; color: #333; padding: 12px 30px; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; margin-top: 20px; transition: all 0.3s; }
+        .back-btn:hover { background: #999; color: white; }
+        @media (max-width: 600px) { header h1 { font-size: 1.8em; } .options { grid-template-columns: 1fr; } .options.two-col { grid-template-columns: 1fr; } .form-section { padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏠 RoomFit</h1>
+            <p>당신의 원룸을 위한 맞춤형 수납 가구 추천 시스템</p>
+        </header>
+        <div class="form-section" id="formSection">
+            <h2>📋 당신의 상황을 알려주세요</h2>
+            <div class="form-group">
+                <label>📦 정리할 물건 종류</label>
+                <div class="options">
+                    <button class="option-btn" onclick="setItem('clothes')">👕 옷</button>
+                    <button class="option-btn" onclick="setItem('books')">📚 책</button>
+                    <button class="option-btn" onclick="setItem('cosmetics')">💄 화장품</button>
+                    <button class="option-btn" onclick="setItem('accessories')">⌚ 악세서리</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>📐 방의 크기</label>
+                <div class="options two-col">
+                    <button class="option-btn" onclick="setSize('small')">4-7평</button>
+                    <button class="option-btn" onclick="setSize('large')">7-12평</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>🎨 방의 스타일</label>
+                <div class="options two-col">
+                    <button class="option-btn" onclick="setStyle('vintage')">빈티지</button>
+                    <button class="option-btn" onclick="setStyle('minimal')">미니멀</button>
+                    <button class="option-btn" onclick="setStyle('modern')">모던</button>
+                </div>
+            </div>
+            <button class="submit-btn" onclick="getRecommendation()">🔍 추천 받기</button>
+        </div>
+        <div class="result-section" id="resultSection">
+            <h2>✨ 당신을 위한 맞춤형 추천</h2>
+            <div id="recommendationResult"></div>
+            <button class="back-btn" onclick="resetForm()">← 다시 시작</button>
+        </div>
+    </div>
+    <script>
+        let selectedItem = '', selectedSize = '', selectedStyle = '';
+        const recommendations = {
+            'clothes_small_vintage': { items: '옷 | 4-7평 | 빈티지', products: [{ name: '빈티지 스타일 우드 옷장', link: 'https://smartstore.naver.com/unrack/products/13326032958?nl-ts-pid=jQLfGsqos5qhr%2F0lQWN-469068&NaPm=ct%3Dmolhuk05%7Cci%3DERdb409f56%2D4494%2D11f1%2D97bb%2De25cfb331c75%7Ctr%3Dpla%7Chk%3D3ac4d5653da3ffb53c85b3136d5e42aee9bfd59c%7Cnacn%3DgbflDQhx3r0MB' }, { name: '빈티지 미니 옷장', link: 'https://smartstore.naver.com/ttaigo/products/9173111886?nl-query=%EB%B9%88%ED%8B%B0%EC%A7%80+%EB%AF%B8%EB%8B%88+%EC%98%B7%EC%9E%A5&nl-ts-pid=jQLfGsqos5qhr%2F0lQWN-469068&NaPm=ct%3Dmolhxuvc%7Cci%3D472610dc8cbab9c566a3a9fbaa6bcf9c4c926e35%7Ctr%3Dsls%7Csn%3D8872485%7Chk%3D8841d88c398d0d8af21882abb4bc7a5bc7265f76' }], reason: '4-7평의 좁은 공간에는 우드 톤의 빈티지 옷장이 어울립니다. 세로로 높게 설계되어 공간을 효율적으로 활용할 수 있습니다.' },
+            'clothes_large_vintage': { items: '옷 | 7-12평 | 빈티지', products: [{ name: '슬라이딩 옷장', link: 'https://smartstore.naver.com/baekha106/products/12982971475?nl-ts-pid=jQLfGsqos5qhr%2F0lQWN-469068&NaPm=ct%3Dmolsu535%7Cci%3DERd4267bc0%2D44bf%2D11f1%2D9e10%2Dda45e156bd3b%7Ctr%3Dpla%7Chk%3D697069aa8a8ac34850c63752ae8c42c03bd103fd%7Cnacn%3DgbflDQhx3r0MB' }, { name: '소프시스 E0등급 루밍 드레스룸 시스템행거 400 5단 선반', link: 'https://brand.naver.com/sofsys/products/9546476406?nl-ts-pid=jQMkDwqX5mjivYU40tC-510938&NaPm=ct%3Dmolsxxup%7Cci%3DCrMw2QAAAZ3fl8cjALGdiw%2E%2E02%7Ctr%3Dpmax%7Chk%3D7dcbbf9b4bf896d1d275b5f0231ed12afbbc1f5b%7Cnacn%3DgbflDQhx3r0MB' }], reason: '7-12평의 넓은 공간에는 와이드한 빈티지 옷장으로 여유있게 수납할 수 있습니다. 우드의 따뜻한 느낌이 빈티지 스타일을 더욱 살려줍니다.' },
+            'clothes_small_minimal': { items: '옷 | 4-7평 | 미니멀', products: [{ name: '미니멀 디자인 전신거울 공간절약 슬림 옷장', link: 'https://smartstore.naver.com/zerozero3811/products/13402914836?nl-query=%EB%AF%B8%EB%8B%88%EB%A9%80+%EC%8A%AC%EB%A6%BC+%EC%98%B7%EC%9E%A5&nl-ts-pid=jQMNssqos5ywRQrbJds-224117&NaPm=ct%3Dmolszshk%7Cci%3D709da2f81abbe7742a2540db72f9b0439078d3a8%7Ctr%3Dsls%7Csn%3D9622719%7Chk%3Dd9c8894aabea82b5b9c177dc0419842f1d39dd42' }, { name: '화이트 심플 수납장', link: 'https://smartstore.naver.com/kmall-2510/products/11660837681?nl-query=%ED%99%94%EC%9D%B4%ED%8A%B8+%EC%8B%AC%ED%94%8C+%EC%88%98%EB%82%A9%EC%9E%A5&nl-ts-pid=jQMNgsqos5zceYrcP14-083988&NaPm=ct%3Dmolt1kj4%7Cci%3De38647b88795a8120421c1e02b146a953dd90b0f%7Ctr%3Dsls%7Csn%3D12198809%7Chk%3D6305c5ebdf8145337eaa0fec7a3a590affcb56b8' }], reason: '미니멀한 화이트 톤의 슬림 옷장은 좁은 4-7평 공간을 시각적으로 넓어 보이게 합니다. 깔끔한 라인이 모던함을 더합니다.' },
+            'clothes_large_minimal': { items: '옷 | 7-12평 | 미니멀', products: [{ name: '미니멀 화이트 3 수납장', link: 'https://www.coupang.com/vp/products/9400768579?itemId=27923555638&vendorItemId=94974171024&sourceType=srp_product_ads&clickEventId=cfab84d0-44c0-11f1-a489-6643722429c9&korePlacement=15&koreSubPlacement=6&traceId=molt43kk' }, { name: '심플 디자인 옷걸이 선반', link: 'https://www.coupang.com/vp/products/9323368456?itemId=27635010660&vendorItemId=94597771644&sourceType=srp_product_ads&clickEventId=0b704500-44c1-11f1-9442-9dba7a240951&korePlacement=15&koreSubPlacement=1&traceId=molt5s1q' }], reason: '넉넉한 7-12평 공간에 미니멀한 화이트 수납장으로 세련된 분위기를 연출할 수 있습니다. 깨끗하고 정돈된 느낌이 강조됩니다.' },
+            'clothes_small_modern': { items: '옷 | 4-7평 | 모던', products: [{ name: '모던 블랙 슬림 옷장', link: 'https://www.coupang.com/vp/products/6924929213?itemId=16736162636&vendorItemId=84070908214&q=%EB%AA%A8%EB%8D%98+%EB%B8%94%EB%9E%99+%EC%8A%AC%EB%A6%BC+%EC%98%B7%EC%9E%A5&searchId=3032b9d3159577&sourceType=search&itemsCount=60&searchRank=7&rank=7&traceId=molt812x' }, { name: '스틸 메탈 옷걸이', link: 'https://www.coupang.com/vp/products/9355033833?itemId=27753854737&vendorItemId=94714697778&sourceType=srp_product_ads&clickEventId=66feaf60-44c1-11f1-b83c-0974544f6c23&korePlacement=15&koreSubPlacement=5&traceId=molt98g0' }], reason: '모던한 블랙/그레이 톤 옷장은 좁은 공간을 세련되게 정리해줍니다. 메탈 디테일이 현대적인 감각을 더합니다.' },
+            'clothes_large_modern': { items: '옷 | 7-12평 | 모던', products: [{ name: '모던 드레스룸 수납장', link: 'https://www.coupang.com/vp/products/8969035286?itemId=26248430902&vendorItemId=93008342706&q=%EB%AA%A8%EB%8D%98+%EB%B8%94%EB%9E%99+%EC%8A%AC%EB%A6%BC+%EC%98%B7%EC%9E%A5&searchId=3032b9d3159577&sourceType=search&itemsCount=60&searchRank=14&rank=14&traceId=molt73di' }, { name: '스타일리시 옷걸이 선반', link: 'https://www.coupang.com/vp/products/8969035286?itemId=26248430902&vendorItemId=93008342706&q=%EC%8A%A4%ED%83%80%EC%9D%BC%EB%A6%AC%EC%8B%9C+%EC%98%B7%EA%B1%B8%EC%9D%B4+%EC%84%A0%EB%B0%98&searchId=116e8c2f3238427&sourceType=search&itemsCount=60&searchRank=2&rank=2&traceId=moltay2u' }], reason: '7-12평의 넉넉한 공간에 모던한 수납 시스템으로 대용량 옷을 효율적으로 정리할 수 있습니다. 깔끔하고 고급스러운 분위기 연출이 가능합니다.' },
+            'books_small_vintage': { items: '책 | 4-7평 | 빈티지', products: [{ name: '빈티지 우드 책장', link: 'https://www.coupang.com/vp/products/9063891449?itemId=26613922417&vendorItemId=94983846600&sourceType=srp_product_ads&clickEventId=be040f30-44c1-11f1-bf91-1616e9cd41be&korePlacement=15&koreSubPlacement=5&traceId=moltbygo' }, { name: '레트로 스타일 선반', link: 'https://www.coupang.com/vp/products/9342021136?itemId=27706550942&vendorItemId=94669433782&sourceType=srp_product_ads&clickEventId=d56ccbd0-44c1-11f1-8580-24bfc508bbf8&korePlacement=15&koreSubPlacement=1&traceId=moltcy9x' }], reason: '좁은 공간에 빈티지 감성의 우드 책장으로 따뜻하고 고전적인 분위기를 연출할 수 있습니다. 책도 인테리어 소품으로 돋보입니다.' },
+            'books_large_vintage': { items: '책 | 7-12평 | 빈티지', products: [{ name: '빈티지 대형 책장', link: 'https://www.coupang.com/vp/products/9438133973?itemId=28069054575&vendorItemId=95177585766&q=%EB%B9%88%ED%8B%B0%EC%A7%80+%EB%8C%80%ED%98%95+%EC%B1%85%EC%9E%A5&searchId=bc6f8d8b508100&sourceType=search&itemsCount=60&searchRank=7&rank=7&traceId=moltec21' }, { name: '앤틱 우드 오픈선반', link: 'https://www.coupang.com/vp/products/9496574572?itemId=28288249221&vendorItemId=95241172106&sourceType=srp_product_ads&clickEventId=40608e90-44c2-11f1-845a-3e60da09704a&korePlacement=15&koreSubPlacement=16&traceId=molti2cl' }], reason: '넉넉한 7-12평 공간에 빈티지 대형 책장으로 대량의 책을 보관하면서도 감성적인 공간을 만들 수 있습니다.' },
+            'books_small_minimal': { items: '책 | 4-7평 | 미니멀', products: [{ name: '미니멀 화이트 책장', link: 'https://www.coupang.com/vp/products/8442410494?itemId=24420540224&vendorItemId=92563429666&sourceType=srp_product_ads&clickEventId=8b590fd0-44c2-11f1-a946-0959d5a7e017&korePlacement=15&koreSubPlacement=1&traceId=moltjg9j' }, { name: '심플 금속 선반', link: 'https://www.coupang.com/vp/products/8721833320?itemId=25335130717&vendorItemId=92329881297&q=%EC%8B%AC%ED%94%8C+%EA%B8%88%EC%86%8D+%EC%84%A0%EB%B0%98&searchId=1ebbaba61423523&sourceType=search&itemsCount=60&searchRank=46&rank=46&traceId=molto6zt' }], reason: '미니멀한 화이트 책장으로 좁은 공간을 깔끔하게 정리합니다. 책 하나하나가 돋보이는 세련된 디스플레이가 가능합니다.' },
+            'books_large_minimal': { items: '책 | 7-12평 | 미니멀', products: [{ name: '미니멀 대형 책장', link: 'https://www.coupang.com/vp/products/9006374523?itemId=26396823491&vendorItemId=95181988823&q=%EB%AF%B8%EB%8B%88%EB%A9%80+%EB%8C%80%ED%98%95+%EC%B1%85%EC%9E%A5&searchId=0ec95dda840363&sourceType=search&itemsCount=60&searchRank=4&rank=4&traceId=moltoyll' }, { name: '화이트 오픈형 선반', link: 'https://www.coupang.com/vp/products/7215054283?itemId=18269100953&vendorItemId=85415379274&sourceType=srp_product_ads&clickEventId=abda2320-44c2-11f1-bede-79c65ec6fcb5&korePlacement=15&koreSubPlacement=9&traceId=moltkpu6' }], reason: '넓은 공간에 미니멀한 대형 책장으로 도서관 같은 고급스러운 분위기를 연출합니다. 많은 책을 체계적으로 정리할 수 있습니다.' },
+            'books_small_modern': { items: '책 | 4-7평 | 모던', products: [{ name: '모던 스틸 책장', link: 'https://www.coupang.com/vp/products/7139193777?itemId=25334886529&vendorItemId=92329642936&q=%EB%AA%A8%EB%8D%98+%EC%8A%A4%ED%8B%B8+%EC%B1%85%EC%9E%A5&searchId=78b7de436090458&sourceType=search&itemsCount=60&searchRank=46&rank=46&traceId=moltqmsh' }, { name: '모던 블랙 선반', link: 'https://www.coupang.com/vp/products/8497874100?itemId=26510393942&vendorItemId=93484971343&sourceType=srp_product_ads&clickEventId=69859670-44c3-11f1-8b5d-ae5dfc40b196&korePlacement=15&koreSubPlacement=9&traceId=moltrewd' }], reason: '모던한 스틸과 블랙 톤 책장으로 좁은 공간에 세련된 도시적 감각을 더할 수 있습니다.' },
+            'books_large_modern': { items: '책 | 7-12평 | 모던', products: [{ name: '모던 대형 책장', link: 'https://www.coupang.com/vp/products/9184068431?itemId=27088571016&vendorItemId=94056798908&sourceType=srp_product_ads&clickEventId=3d1edba0-44c3-11f1-abbc-116e1e391797&korePlacement=15&koreSubPlacement=5&traceId=moltpqpo' }, { name: '스타일리시 디스플레이 선반', link: 'https://www.coupang.com/vp/products/8250188116?itemId=23750423742&vendorItemId=90774941171&q=%EC%8A%A4%ED%83%80%EC%9D%BC%EB%A6%AC%EC%8B%9C+%EB%94%94%EC%8A%A4%ED%94%8C%EB%A0%88%EC%9D%B4+%EC%84%A0%EB%B0%98&searchId=628e61aa2479211&sourceType=search&itemsCount=60&searchRank=3&rank=3&traceId=moltsfk0' }], reason: '넓은 공간에 모던한 대형 책장으로 전문적이고 고급스러운 라이브러리 분위기를 만들 수 있습니다.' },
+            'cosmetics_small_vintage': { items: '화장품 | 4-7평 | 빈티지', products: [{ name: '빈티지 화장품 수납함', link: 'https://www.coupang.com/vp/products/9291660175?itemId=27518921233&vendorItemId=94483723069&q=%EB%B9%88%ED%8B%B0%EC%A7%80+%ED%99%94%EC%9E%A5%ED%92%88+%EC%88%98%EB%82%A9%ED%95%A8&searchId=4ae1ced71477911&sourceType=search&itemsCount=60&searchRank=4&rank=4&traceId=moltthtz' }, { name: '우드 트레이', link: 'https://www.coupang.com/vp/products/9117254234?itemId=26817513390&vendorItemId=93787743109&q=%EC%9A%B0%EB%93%9C+%ED%99%94%EC%9E%A5%ED%92%88+%ED%8A%B8%EB%A0%88%EC%9D%B4&searchId=d5317415917544&sourceType=search&itemsCount=60&searchRank=3&rank=3&traceId=moltutnv' }], reason: '빈티지 감성의 화장품 수납함으로 좁은 공간을 우아하게 꾸밀 수 있습니다. 앤틱한 느낌이 화장대 또는 욕실을 감성적으로 연출합니다.' },
+            'cosmetics_large_vintage': { items: '화장품 | 7-12평 | 빈티지', products: [{ name: '빈티지 대형 뷰티 수납함', link: 'https://www.coupang.com/vp/products/9117330216?itemId=26817753892&vendorItemId=93813006548&q=%EB%B9%88%ED%8B%B0%EC%A7%80+%EB%8C%80%ED%98%95+%EB%B7%B0%ED%8B%B0+%EC%8A%A4%ED%83%A0%EB%93%9C&searchId=808cead02244045&sourceType=search&itemsCount=60&searchRank=7&rank=7&traceId=moltw6bk' }, { name: '앤틱 우드 선반', link: 'https://www.coupang.com/vp/products/8832307791?itemId=25735885232&vendorItemId=92724394308&q=%EC%95%A4%ED%8B%B1+%EC%9A%B0%EB%93%9C+%EC%84%A0%EB%B0%98&searchId=2150f824722737&sourceType=search&itemsCount=60&searchRank=3&rank=3&traceId=moltwx54' }], reason: '넓은 7-12평에 빈티지 스타일의 화장품 수납으로 고급스럽고 감성적인 드레싱 공간을 만들 수 있습니다.' },
+            'cosmetics_small_minimal': { items: '화장품 | 4-7평 | 미니멀', products: [{ name: '미니멀 화이트 정리함', link: 'https://www.coupang.com/vp/products/8810605657?itemId=25665371154&vendorItemId=92699732561&q=%EB%AF%B8%EB%8B%88%EB%A9%80+%ED%99%94%EC%9D%B4%ED%8A%B8+%EC%A0%95%EB%A6%AC%ED%95%A8&searchId=b1662c0e7336997&sourceType=search&itemsCount=60&searchRank=7&rank=7&traceId=moltxmxq' }, { name: '심플 투명 수납박스', link: 'https://smartstore.naver.com/ianbiz/products/5787476620?nl-ts-pid=jQMAdlqX5mkB4nU5LYZ-352009&n_media=27758&n_query=%EC%8B%AC%ED%94%8C%ED%88%AC%EB%AA%85%EC%88%98%EB%82%A9%EB%B0%95%EC%8A%A4&n_rank=1&n_ad_group=grp-a001-02-000000044420004&n_ad=nad-a001-02-000000317252242&n_campaign_type=2&n_mall_id=hancris77&n_mall_pid=5787476620&n_ad_group_type=2&n_match=3&NaPm=ct%3Dmolty0mn%7Cci%3DER2912747c%2D44c4%2D11f1%2D9e2c%2D7ee9c3901539%7Ctr%3Dpla%7Chk%3D91aac16bd5ebfe089b3d5c0110b5f33582485405%7Cnacn%3DgbflDQhx3r0MB' }], reason: '미니멀한 화이트/투명 수납으로 좁은 공간을 깔끔하게 정리합니다. 제품이 한눈에 보여 관리가 용이합니다.' },
+            'cosmetics_large_minimal': { items: '화장품 | 7-12평 | 미니멀', products: [{ name: '화이트 화장품 정리함', link: 'https://www.coupang.com/vp/products/1343169103?itemId=11272114525&vendorItemId=73757451308&q=화이트%20정리함&searchId=7eef297b2562023&sourceType=search&itemsCount=60&searchRank=17&rank=17&traceId=molu0sq0' }, { name: '깔끔한 오가나이저', link: 'https://www.coupang.com/vp/products/1435335395?itemId=18551783&vendorItemId=3027241943&q=%EC%98%A4%EA%B0%80%EB%82%98%EC%9D%B4%EC%A0%80&searchId=d3a9fb6f12030965&sourceType=search&itemsCount=60&searchRank=3&rank=3&traceId=molu1xsd' }], reason: '넓은 공간에 미니멀한 화이트 시스템으로 많은 화장품을 정돈되게 보관하고 전시할 수 있습니다.' },
+            'cosmetics_small_modern': { items: '화장품 | 4-7평 | 모던', products: [{ name: '모던 블랙 정리함', link: 'https://www.coupang.com/vp/products/9447375910?itemId=28103215545&vendorItemId=94974918109&q=%EB%AA%A8%EB%8D%98+%EB%B8%94%EB%9E%99+%EC%A0%95%EB%A6%AC%ED%95%A8&searchId=b8dbae8b9088570&sourceType=search&itemsCount=60&searchRank=2&rank=2&traceId=molu2ijx' }, { name: '스타일리시 메탈 정리대', link: 'https://www.coupang.com/vp/products/8584437730?itemId=24885434910&vendorItemId=91892152581&sourceType=srp_product_ads&clickEventId=f6fb9e40-44c4-11f1-b165-21558a6dd6a4&korePlacement=15&koreSubPlacement=1&traceId=molu5lhn' }], reason: '모던한 블랙/메탈 톤 수납으로 좁은 공간을 고급스럽게 정리합니다. 미니한 크기로도 충분한 수납 효율을 제공합니다.' },
+            'cosmetics_large_modern': { items: '화장품 | 7-12평 | 모던', products: [{ name: '모던 대형 뷰티 수납장', link: 'https://www.coupang.com/vp/products/8698459809?itemId=26313369601&vendorItemId=93290873737&q=%EB%AA%A8%EB%8D%98+%EB%B7%B0%ED%8B%B0+%EC%88%98%EB%82%A9%EC%9E%A5&searchId=c069a7f11473465&sourceType=search&itemsCount=60&searchRank=8&rank=8&traceId=molu6x1b' }, { name: '세련된 디스플레이 선반', link: 'https://www.coupang.com/vp/products/9088363007?itemId=26652122601&vendorItemId=93677319099&q=%EC%84%B8%EB%A0%A8%EB%90%9C+%EB%94%94%EC%8A%A4%ED%94%8C%EB%A0%88%EC%9D%B4+%EC%84%A0%EB%B0%98&searchId=dd7999c012341178&sourceType=search&itemsCount=60&searchRank=4&rank=4&traceId=molu7tv4' }], reason: '넓은 7-12평에 모던한 수납장으로 고급 에스테틱한 뷰티룸을 완성할 수 있습니다. 많은 화장품을 체계적으로 관리할 수 있습니다.' },
+            'accessories_small_vintage': { items: '악세서리 | 4-7평 | 빈티지', products: [{ name: '빈티지 악세서리 보관함', link: 'https://www.coupang.com/vp/products/9172057139?itemId=27033150763&vendorItemId=94001691746&sourceType=srp_product_ads&clickEventId=5155f570-44c5-11f1-93e1-933e84a61dfe&korePlacement=15&koreSubPlacement=1&traceId=molu8u1i' }, { name: '우드 주얼리 박스', link: 'https://www.coupang.com/vp/products/9362896128?itemId=27781967521&vendorItemId=94742277403&q=%EC%9A%B0%EB%93%9C+%EC%A3%BC%EC%96%BC%EB%A6%AC+%EB%B0%95%EC%8A%A4&searchId=97d3ee3312110410&sourceType=search&itemsCount=60&searchRank=14&rank=14&traceId=molu9nbk' }], reason: '빈티지 감성의 주얼리 박스로 소중한 악세서리를 우아하게 보관하면서 인테리어도 살릴 수 있습니다.' },
+            'accessories_large_vintage': { items: '악세서리 | 7-12평 | 빈티지', products: [{ name: '빈티지 대형 악세서리 디스플레이', link: 'https://www.coupang.com/vp/products/9220394160?itemId=27250612642&vendorItemId=94217494220&sourceType=srp_product_ads&clickEventId=83a54ad0-44c5-11f1-b01f-97c817083068&korePlacement=15&koreSubPlacement=1&traceId=moluax3u' }, { name: '앤틱 수집장', link: 'https://www.coupang.com/vp/products/8538502686?itemId=24719073346&vendorItemId=91893114732&sourceType=srp_product_ads&clickEventId=9e85a200-44c5-11f1-bc3e-12dcaf8a2098&korePlacement=15&koreSubPlacement=5&traceId=molubswf' }], reason: '넓은 공간에 빈티지 스타일의 악세서리 디스플레이로 갤러리 같은 감성적인 공간을 만들 수 있습니다.' },
+            'accessories_small_minimal': { items: '악세서리 | 4-7평 | 미니멀', products: [{ name: '미니멀 화이트 악세서리함', link: 'https://www.coupang.com/vp/products/8832529543?itemId=25736692785&vendorItemId=92725188392&sourceType=srp_product_ads&clickEventId=b599d600-44c5-11f1-9032-1a2f2b241782&korePlacement=15&koreSubPlacement=6&traceId=molucljh' }, { name: '심플 투명 보관함', link: 'https://www.coupang.com/vp/products/9443373568?itemId=28088417002&vendorItemId=95184462607&sourceType=srp_product_ads&clickEventId=e57d8290-44c5-11f1-860c-4aed1959d1c5&korePlacement=15&koreSubPlacement=12&traceId=molufc65' }], reason: '미니멀한 화이트/투명 악세서리 보관함으로 좁은 공간을 깔끔하게 정리하면서도 악세서리를 한눈에 볼 수 있습니다.' },
+            'accessories_large_minimal': { items: '악세서리 | 7-12평 | 미니멀', products: [{ name: '화이트 악세사리함', link: 'https://www.coupang.com/vp/products/9400352883?itemId=27921956840&vendorItemId=94880497524&q=%ED%99%94%EC%9D%B4%ED%8A%B8+%EC%A3%BC%EC%96%BC%EB%A6%AC%ED%95%A8&searchId=8fc784b112401378&sourceType=search&itemsCount=60&searchRank=3&rank=3&traceId=moludkqa' }, { name: '깔끔한 투명 중형 정리', link: 'https://www.coupang.com/vp/products/7490152263?itemId=19584496681&vendorItemId=87229383794&sourceType=srp_product_ads&clickEventId=e57d8290-44c5-11f1-82b5-6b05d274beac&korePlacement=15&koreSubPlacement=11&traceId=moluexk6' }], reason: '넓은 공간에 미니멀한 수집장으로 많은 악세서리를 세련되게 전시할 수 있습니다. 깨끗한 분위기가 강조됩니다.' },
+            'accessories_small_modern': { items: '악세서리 | 4-7평 | 모던', products: [{ name: '모던 블랙 악세서리함', link: 'https://www.coupang.com/vp/products/7800142963?itemId=21123052529&vendorItemId=83031699217&q=%EB%AA%A8%EB%8D%98+%EB%B8%94%EB%9E%99+%EC%95%85%EC%84%B8%EC%82%AC%EB%A6%AC%ED%95%A8&searchId=c09f609a2677821&sourceType=search&itemsCount=60&searchRank=2&rank=2&traceId=molug1ys' }, { name: '스타일리시 블랙 트레이', link: 'https://www.coupang.com/vp/products/7862169899?itemId=25716167865&vendorItemId=92705034225&q=%EB%AA%A8%EB%8D%98+%EB%B8%94%EB%9E%99+%EC%95%85%EC%84%B8%EC%82%AC%EB%A6%AC%ED%95%A8&searchId=c09f609a2677821&sourceType=search&itemsCount=60&searchRank=43&rank=43&traceId=moluichn' }], reason: '모던한 블랙/메탈 톤 악세서리 보관함으로 좁은 공간을 고급스럽게 꾸밀 수 있습니다.' },
+            'accessories_large_modern': { items: '악세서리 | 7-12평 | 모던', products: [{ name: '모던 중형 악세서리 수납함', link: 'https://www.coupang.com/vp/products/8817410995?itemId=25692113621&vendorItemId=92911650358&q=모던%20블랙%20악세사리함&searchId=c09f609a2677821&sourceType=search&itemsCount=60&searchRank=3&rank=3&traceId=molughba' }, { name: '세련된 악세사리 진열대', link: 'https://www.coupang.com/vp/products/8181190918?itemId=23391044391&vendorItemId=90419205374&q=%EB%AA%A8%EB%8D%98+%EB%B8%94%EB%9E%99+%EC%95%85%EC%84%B8%EC%82%AC%EB%A6%AC%ED%95%A8&searchId=c09f609a2677821&sourceType=search&itemsCount=60&searchRank=13&rank=13&traceId=moluheop' }], reason: '넓은 7-12평에 모던한 악세서리 수납장으로 전문가스러운 제시장을 연출할 수 있습니다. 다양한 악세서리를 멋있게 보관할 수 있습니다.' }
+        };
+        function setItem(item) { selectedItem = item; updateButton('item', item); }
+        function setSize(size) { selectedSize = size; updateButton('size', size); }
+        function setStyle(style) { selectedStyle = style; updateButton('style', style); }
+        function updateButton(type, value) {
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                let btnText = btn.textContent.trim(), matchText = '';
+                if (type === 'item') { const itemNames = { clothes: '옷', books: '책', cosmetics: '화장품', accessories: '악세서리' }; matchText = itemNames[value]; }
+                else if (type === 'size') { const sizeNames = { small: '4-7평', large: '7-12평' }; matchText = sizeNames[value]; }
+                else if (type === 'style') { const styleNames = { vintage: '빈티지', minimal: '미니멀', modern: '모던' }; matchText = styleNames[value]; }
+                if (btnText === matchText) btn.classList.add('selected');
+                else if (type === 'item' && selectedItem !== item && ['옷', '책', '화장품', '악세서리'].some(i => btnText.includes(i))) btn.classList.remove('selected');
+                else if (type === 'size' && selectedSize !== size && btnText.includes('평')) btn.classList.remove('selected');
+                else if (type === 'style' && selectedStyle !== style && ['빈티지', '미니멀', '모던'].includes(btnText)) btn.classList.remove('selected');
+            });
+        }
+        function getRecommendation() {
+            if (!selectedItem || !selectedSize || !selectedStyle) { alert('모든 항목을 선택해주세요!'); return; }
+            const key = selectedItem + '_' + selectedSize + '_' + selectedStyle;
+            const rec = recommendations[key];
+            if (rec) displayResult(rec);
+            else alert('추천 정보를 찾을 수 없습니다.');
+        }
+        function displayResult(rec) {
+            let html = '<div class="recommendation-card"><h3>📌 당신의 선택</h3><div class="info-text">' + rec.items + '</div><p style="margin-bottom: 15px; color: #555;">' + rec.reason + '</p></div><div class="recommendation-card"><h3>🛒 추천 상품</h3>';
+            rec.products.forEach((product, index) => { html += '<div class="product-item"><div class="product-name">' + (index + 1) + '. ' + product.name + '</div><a href="' + product.link + '" target="_blank" class="product-link">🔗 링크에서 보기</a></div>'; });
+            html += '</div>';
+            document.getElementById('recommendationResult').innerHTML = html;
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('resultSection').classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function resetForm() {
+            selectedItem = ''; selectedSize = ''; selectedStyle = '';
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('recommendationResult').innerHTML = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
